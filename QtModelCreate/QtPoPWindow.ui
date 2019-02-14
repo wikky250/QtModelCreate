@@ -57,7 +57,7 @@
   </connection>
   <connection>
    <sender>buttonBox</sender>
-   <signal>accepted()</signal>
+   <signal>rejected()</signal>
    <receiver>QtPoPWindow</receiver>
    <slot>reject()</slot>
    <hints>

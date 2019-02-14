@@ -18,16 +18,9 @@ QtPoPWindow::QtPoPWindow(QDialog *parent)
 	}
 	file.close();
 	QStandardItemModel *ItemModel = new QStandardItemModel(this);
-//	int nCount = m_listClass.size();
-// 	for (int i = 0; i < nCount; i++)
-// 	{
-// 		//QString string = static_cast<QString>(m_listClass.at(i));
-// 		//QStandardItem *item = new QStandardItem(string);
-// 		//ItemModel->appendRow(item);
-// 		ui.ClassList->add
-// 	}
 	ui.ClassList->addItems(m_listClass);
 	connect(ui.ClassList, SIGNAL(clicked(QModelIndex)), this, SLOT(SelectSimple(QModelIndex)));
+	ui.ClassList->installEventFilter(this);
 }
 
 QtPoPWindow::~QtPoPWindow()
@@ -53,7 +46,6 @@ void QtPoPWindow::SaveParam()
 	{
 		in << m_listClass [i];
 	}
-	//in << *(m_listClass.end() - 1);
 
 	file.close();
 }
@@ -90,9 +82,37 @@ void QtPoPWindow::accept()
 	}
 }
 
+// void QtPoPWindow::reject()
+// {
+// 	this->exec();
+// }
+
+bool QtPoPWindow::eventFilter(QObject * watched, QEvent * event)
+{
+	if (watched == ui.ClassList)
+	{
+		if (event->type() == QEvent::KeyRelease)
+		{
+			if (static_cast<QKeyEvent *>(event)->key() == Qt::Key_Delete)
+			{
+				QString str = m_selectedindex.data().toString();
+				if (QMessageBox::Yes == QMessageBox::question(nullptr, QString::fromLocal8Bit("É¾³ý·ÖÀà"), QString::fromLocal8Bit("ÊÇ·ñÉ¾³ý£º") + str, QMessageBox::Yes, QMessageBox::No))
+				{
+					ui.ClassList->takeItem(m_selectedindex.column());
+					int nCount = m_listClass.size();
+					m_listClass.removeOne(str);
+					SaveParam();
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void QtPoPWindow::SelectSimple(QModelIndex index)
 {
-	QString strTemp = index.data().toString();
+	m_selectedindex = index;
+	QString strTemp = m_selectedindex.data().toString();
 	ui.ClassName->setText(strTemp);
 	return;
 }
