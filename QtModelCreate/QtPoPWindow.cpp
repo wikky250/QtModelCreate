@@ -80,15 +80,12 @@ void QtPoPWindow::accept()
 			SaveParam();
 		}
 	}
+	emit Signal_CreateModel(m_sResult);
+	this->close();
 }
 
-// void QtPoPWindow::reject()
-// {
-// 	this->exec();
-// }
-
 bool QtPoPWindow::eventFilter(QObject * watched, QEvent * event)
-{
+{ 
 	if (watched == ui.ClassList)
 	{
 		if (event->type() == QEvent::KeyRelease)

@@ -7,7 +7,8 @@
 class QtPoPWindow : public QDialog
 {
 	Q_OBJECT
-
+		signals:
+	void Signal_CreateModel(QString);
 public:
 	QtPoPWindow(QDialog *parent = Q_NULLPTR);
 	~QtPoPWindow();

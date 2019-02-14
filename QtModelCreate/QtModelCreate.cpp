@@ -33,6 +33,7 @@ void QtModelCreate::ShowPopWindow(QPoint point)
 {
 	QtPoPWindow dlg;
 	dlg.move(point);
+	QObject::connect(&dlg, SIGNAL(Signal_CreateModel(QString)), this, SLOT(onCreateModel(QString)));
 	int result = dlg.exec();
 	if (QDialog::Accepted==result)
 	{
@@ -41,6 +42,7 @@ void QtModelCreate::ShowPopWindow(QPoint point)
 			//ÈôÎ´ÔÝÍ£ÊÓÆµ£¬µã»÷OKÔò¼ÌÐø²¥·Å
 			emit Signal_ConvertPlay();
 		}
+
 	}
 	else
 	{
@@ -229,6 +231,10 @@ void QtModelCreate::onShowImage(Mat image)
 	QImage disImage = QImage((const unsigned char*)(image.data), image.cols, image.rows, image.step, QImage::Format_RGB888);
 	m_LabelShow->setPixmap(QPixmap::fromImage(disImage));
 	m_bshowImg = true;
+}
+void QtModelCreate::onCreateModel(QString modelname)
+{
+	QMessageBox::about(nullptr, "", "");
 }
 void QtModelCreate::onOpen()
 {

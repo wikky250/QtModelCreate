@@ -61,4 +61,5 @@ private:
 	void onClose();
 	void onConvertPlay();
 	void onShowImage(Mat);
+	void onCreateModel(QString modelname);
 };
