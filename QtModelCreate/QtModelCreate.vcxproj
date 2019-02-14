@@ -117,18 +117,24 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MultPlay.cpp" />
     <ClCompile Include="QtModelCreate.cpp" />
+    <ClCompile Include="QtPoPWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtModelCreate.h" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="QtModelCreate.ui" />
+    <QtUic Include="QtPoPWindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="QtModelCreate.qrc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllRelay.h" />
+    <QtMoc Include="QtPoPWindow.h">
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets;.\..\..\RelayFile\include\opencv;.\..\..\RelayFile\include\opencv\opencv;.\..\..\RelayFile\include\opencv\opencv2</IncludePath>
+      <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>
+    </QtMoc>
     <QtMoc Include="MultPlay.h">
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>
       <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtANGLE;$(QTDIR)\include\QtWidgets</IncludePath>

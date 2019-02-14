@@ -9,7 +9,10 @@
 #include <QLabel>
 #include <QWidget>
 #include <QSemaphore>
-
+#include <QSettings>
+#include <QTextStream>
+#include <list>
+#include <QStandardItemModel>
 #pragma region OpenCV
 
 #include "cv.hpp"

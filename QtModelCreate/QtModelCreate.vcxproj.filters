@@ -39,6 +39,9 @@
     <ClCompile Include="MultPlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QtPoPWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtModelCreate.h">
@@ -47,9 +50,15 @@
     <QtMoc Include="MultPlay.h">
       <Filter>Header Files</Filter>
     </QtMoc>
+    <QtMoc Include="QtPoPWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="QtModelCreate.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="QtPoPWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

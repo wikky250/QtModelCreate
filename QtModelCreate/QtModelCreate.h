@@ -4,6 +4,7 @@
 #include "ui_QtModelCreate.h"
 #include "AllRelay.h"
 #include "MultPlay.h"
+#include "QtPoPWindow.h"
 class QtModelCreate : public QMainWindow
 {
 	Q_OBJECT
@@ -20,12 +21,19 @@ private:
 	QString m_SvideoPath;
 	//判断是否为视频加载
 	bool m_BisVideo;
+	//暂停播放
+	bool m_Pause;
+	//确定后是否继续
+	bool m_bContinue;
+	
 	//多线程实例
 	MultPlay *m_Play;
 	//多线程进程
 	QThread *m_PlayThread;
 	QLabel *m_LabelShow;
 	QSize m_SizeShowLabel;
+	//右键菜单
+	void ShowPopWindow(QPoint point);
 	void InitWindow();
 	void virtualPress(QKeyEvent * event);
 
