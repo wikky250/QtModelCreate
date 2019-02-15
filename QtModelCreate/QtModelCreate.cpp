@@ -10,6 +10,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	m_bshowImg = false;
 	m_Pause = true;
 	m_bContinue = false;
+	AppPath = qApp->applicationDirPath();
 	InitWindow();
 	QObject::connect(this, SIGNAL(Signal_ConvertPlay()), this, SLOT(onConvertPlay()));
 	m_LabelShow = this->findChild<QLabel *>("label_show");
@@ -234,7 +235,30 @@ void QtModelCreate::onShowImage(Mat image)
 }
 void QtModelCreate::onCreateModel(QString modelname)
 {
-	QMessageBox::about(nullptr, "", "");
+	if ("\n" == modelname.right(1))
+	{
+		modelname = modelname.left(modelname.length() - 1);
+	}
+	QString dir_str = AppPath + "/ModelImage/" + modelname + "/";
+	QDir dir;
+	if (!dir.exists(dir_str))
+	{
+		bool res = dir.mkdir(dir_str);
+		if (!res)
+		{
+			QMessageBox::warning(nullptr, QString::fromLocal8Bit("创建文件夹警告"), QString::fromLocal8Bit("模板") + modelname + QString::fromLocal8Bit("创建失败"));
+			return;
+		}
+	}
+	QStringList filter;
+	filter << "*.jpg";
+	dir.setNameFilters(filter);
+	QFileInfoList fileInfoList = dir.entryInfoList(filter);
+	int i_saveImageindex = fileInfoList.size();
+	QString str;
+	str.sprintf("%05d", i_saveImageindex);
+	QString path = dir_str + str + ".jpg";
+	imwrite(path.toStdString(), m_MatLiveImg);
 }
 void QtModelCreate::onOpen()
 {

@@ -25,7 +25,8 @@ private:
 	bool m_Pause;
 	//确定后是否继续
 	bool m_bContinue;
-	
+	//Tools所在目录
+	QString AppPath;
 	//多线程实例
 	MultPlay *m_Play;
 	//多线程进程
