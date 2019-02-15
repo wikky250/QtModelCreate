@@ -10,6 +10,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	m_bshowImg = false;
 	m_Pause = true;
 	m_bContinue = false;
+	m_isaveImageindex = -1;
 	AppPath = qApp->applicationDirPath();
 	InitWindow();
 	IntiCheckList();
@@ -37,17 +38,29 @@ void QtModelCreate::ShowPopWindow(QPoint point)
 	dlg.move(point);
 	QObject::connect(&dlg, SIGNAL(Signal_CreateModel(QString)), this, SLOT(onCreateModel(QString)));
 	int result = dlg.exec();
-	if (QDialog::Accepted==result)
+	if (QDialog::Accepted == result)
 	{
 		if (true == m_bContinue)
 		{
 			//若未暂停视频，点击OK则继续播放
 			emit Signal_ConvertPlay();
+			QString dir_str = AppPath + "/JPEGImages/";
+			QDir dir;
+			if (!dir.exists(dir_str))
+			{
+				bool res = dir.mkdir(dir_str);
+				if (!res)
+				{
+					QMessageBox::warning(nullptr, QString::fromLocal8Bit("创建文件夹警告"), QString::fromLocal8Bit("模板创建失败"));
+					return;
+				}
+			}
+			QStringList filter;
+			filter << "*.jpg";
+			dir.setNameFilters(filter);
+			QFileInfoList fileInfoList = dir.entryInfoList(filter);
+			m_isaveImageindex = fileInfoList.size();
 		}
-
-	}
-	else
-	{
 
 	}
 }
@@ -258,6 +271,26 @@ void QtModelCreate::IntiCheckList()
 		}
 		SaveModel.append(rectandsimple);
 	}
+
+	//保存图像序号
+	QString dir_str = AppPath + "/JPEGImages/";
+	QDir dir;
+	if (!dir.exists(dir_str))
+	{
+		bool res = dir.mkdir(dir_str);
+		if (!res)
+		{
+			QMessageBox::warning(nullptr, QString::fromLocal8Bit("创建文件夹警告"), QString::fromLocal8Bit("模板创建失败"));
+			return;
+		}
+	}
+	QStringList filter;
+	filter << "*.jpg";
+	dir.setNameFilters(filter);
+	QFileInfoList fileInfoList = dir.entryInfoList(filter);
+	m_isaveImageindex = fileInfoList.size();
+	////
+
 	
 }
 void QtModelCreate::onConvertPlay()
@@ -281,30 +314,12 @@ void QtModelCreate::onCreateModel(QString modelname)
 	{
 		modelname = modelname.left(modelname.length() - 1);
 	}
-	QString dir_str = AppPath + "/ModelImage/" + modelname + "/";
-	QDir dir;
-	if (!dir.exists(dir_str))
-	{
-		bool res = dir.mkdir(dir_str);
-		if (!res)
-		{
-			QMessageBox::warning(nullptr, QString::fromLocal8Bit("创建文件夹警告"), QString::fromLocal8Bit("模板") + modelname + QString::fromLocal8Bit("创建失败"));
-			return;
-		}
-	}
-	QStringList filter;
-	filter << "*.jpg";
-	dir.setNameFilters(filter);
-	QFileInfoList fileInfoList = dir.entryInfoList(filter);
-	int i_saveImageindex = fileInfoList.size();
+
+	QString dir_str = AppPath + "/JPEGImages/";
 	QString str;
-	str.sprintf("%05d", i_saveImageindex);
+	str.sprintf("%05d", m_isaveImageindex);
 	QString path = dir_str + str + ".jpg";
 	imwrite(path.toStdString(), m_MatLiveImg);
-
-
-
-
 }
 void QtModelCreate::onOpen()
 {

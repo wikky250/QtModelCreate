@@ -23,9 +23,9 @@ class Ui_QtPoPWindow
 {
 public:
     QGridLayout *gridLayout;
+    QListWidget *ClassList;
     QTextEdit *ClassName;
     QDialogButtonBox *buttonBox;
-    QListWidget *ClassList;
 
     void setupUi(QWidget *QtPoPWindow)
     {
@@ -36,6 +36,11 @@ public:
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        ClassList = new QListWidget(QtPoPWindow);
+        ClassList->setObjectName(QStringLiteral("ClassList"));
+
+        gridLayout->addWidget(ClassList, 2, 0, 1, 1);
+
         ClassName = new QTextEdit(QtPoPWindow);
         ClassName->setObjectName(QStringLiteral("ClassName"));
         ClassName->setMaximumSize(QSize(16777215, 30));
@@ -48,14 +53,9 @@ public:
 
         gridLayout->addWidget(buttonBox, 1, 0, 1, 1);
 
-        ClassList = new QListWidget(QtPoPWindow);
-        ClassList->setObjectName(QStringLiteral("ClassList"));
-
-        gridLayout->addWidget(ClassList, 2, 0, 1, 1);
-
 
         retranslateUi(QtPoPWindow);
-        QObject::connect(buttonBox, SIGNAL(accepted()), QtPoPWindow, SLOT(accept()));
+        QObject::connect(buttonBox, SIGNAL(accepted()), QtPoPWindow, SLOT(onOK()));
         QObject::connect(buttonBox, SIGNAL(rejected()), QtPoPWindow, SLOT(reject()));
 
         QMetaObject::connectSlotsByName(QtPoPWindow);

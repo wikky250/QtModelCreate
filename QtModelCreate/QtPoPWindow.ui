@@ -14,6 +14,9 @@
    <string>QtPoPWindow</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="0">
+    <widget class="QListWidget" name="ClassList"/>
+   </item>
    <item row="0" column="0">
     <widget class="QTextEdit" name="ClassName">
      <property name="maximumSize">
@@ -31,9 +34,6 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QListWidget" name="ClassList"/>
-   </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -43,15 +43,15 @@
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
    <receiver>QtPoPWindow</receiver>
-   <slot>accept()</slot>
+   <slot>onOK()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>181</x>
+     <x>226</x>
      <y>52</y>
     </hint>
     <hint type="destinationlabel">
-     <x>319</x>
-     <y>74</y>
+     <x>323</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -62,12 +62,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>210</x>
-     <y>57</y>
+     <x>162</x>
+     <y>56</y>
     </hint>
     <hint type="destinationlabel">
-     <x>321</x>
-     <y>54</y>
+     <x>162</x>
+     <y>195</y>
     </hint>
    </hints>
   </connection>
@@ -75,5 +75,6 @@
  <slots>
   <slot>accept()</slot>
   <slot>reject()</slot>
+  <slot>onOK()</slot>
  </slots>
 </ui>

@@ -50,7 +50,7 @@ void QtPoPWindow::SaveParam()
 	file.close();
 }
 
-void QtPoPWindow::accept()
+void QtPoPWindow::onOK()
 {
 	bool b_repeat = false;
 	m_sResult = ui.ClassName->toPlainText();
@@ -81,7 +81,12 @@ void QtPoPWindow::accept()
 		}
 	}
 	emit Signal_CreateModel(m_sResult);
-	this->close();
+	QDialog::accept();
+}
+
+void QtPoPWindow::reject()
+{
+	QDialog::reject();
 }
 
 bool QtPoPWindow::eventFilter(QObject * watched, QEvent * event)

@@ -20,8 +20,8 @@ private:
 	void SaveParam();
 	public slots:
 	void SelectSimple(QModelIndex);
-	void accept();
-	//void reject();
+	void onOK();
+	void reject();
 
 	bool eventFilter(QObject *watched, QEvent *event);
 };
