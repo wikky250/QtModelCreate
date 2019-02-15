@@ -37,6 +37,10 @@ private:
 	void ShowPopWindow(QPoint point);
 	void InitWindow();
 	void virtualPress(QKeyEvent * event);
+	//初始化已存在的模板文件
+	QList<DefineSave> SaveModel;
+	void IntiCheckList();
+
 
 	//label_show原始图
 	cv::Mat m_MatLiveImg;

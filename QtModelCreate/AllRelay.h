@@ -13,6 +13,7 @@
 #include <QTextStream>
 #include <list>
 #include <QStandardItemModel>
+#include <QList>
 #pragma region OpenCV
 
 #include "cv.hpp"
@@ -23,3 +24,12 @@ using namespace cv;
 #pragma comment(lib,"opencv_core2413d.lib")
 #pragma comment(lib,"opencv_video2413d.lib")
 #pragma endregion OpenCV
+
+//自定义结构体
+struct DefineSave 
+{
+	QString name;
+	QString path;
+	QList<QRect> ImgObject;
+	QList<int> ImgObjectSample;
+};

@@ -12,6 +12,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	m_bContinue = false;
 	AppPath = qApp->applicationDirPath();
 	InitWindow();
+	IntiCheckList();
 	QObject::connect(this, SIGNAL(Signal_ConvertPlay()), this, SLOT(onConvertPlay()));
 	m_LabelShow = this->findChild<QLabel *>("label_show");
 	int zz = m_LabelShow->frameWidth();
@@ -218,6 +219,47 @@ void QtModelCreate::virtualPress(QKeyEvent * event)
 	}
 	event->ignore();
 }
+void QtModelCreate::IntiCheckList()
+{
+	QFile file(AppPath + "/test.txt");
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		QMessageBox::warning(nullptr, QString::fromLocal8Bit("配置错误"), QString::fromLocal8Bit("未找到predefined_classes文件"));
+	}
+	while (!file.atEnd())
+	{
+		QByteArray line = file.readLine();
+		QString str(line);
+		int startindex = str.lastIndexOf("/")+1;
+		int endindex = str.lastIndexOf(".jpg")+4;
+		QString name = str.mid(startindex, endindex+1 - startindex);
+		QString strrect = str.right(endindex-1);
+		QStringList listRect = strrect.split(QRegExp("[,*/^]"),QString::SkipEmptyParts);
+		if (0 != listRect.size() % 5)
+		{
+			QMessageBox::warning(nullptr, QString::fromLocal8Bit("严重错误！"), QString("test.txt") + QString::fromLocal8Bit("格式错误"));
+			return;
+		}
+		int nRectCount = listRect.size() / 5;
+		int indexRect = 0;
+		DefineSave rectandsimple;
+		rectandsimple.path = str;
+		rectandsimple.name = name;
+
+		while (indexRect<nRectCount)
+		{
+			rectandsimple.ImgObject.append(
+				QRect(listRect[indexRect + 0].toInt(),
+					listRect[indexRect + 1].toInt(),
+					listRect[indexRect + 2].toInt(),
+					listRect[indexRect + 3].toInt()));
+			rectandsimple.ImgObjectSample.append(listRect[indexRect + 4].toInt());
+			indexRect++;
+		}
+		SaveModel.append(rectandsimple);
+	}
+	
+}
 void QtModelCreate::onConvertPlay()
 {
 	m_Pause = !m_Pause;
@@ -259,6 +301,10 @@ void QtModelCreate::onCreateModel(QString modelname)
 	str.sprintf("%05d", i_saveImageindex);
 	QString path = dir_str + str + ".jpg";
 	imwrite(path.toStdString(), m_MatLiveImg);
+
+
+
+
 }
 void QtModelCreate::onOpen()
 {
