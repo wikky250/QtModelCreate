@@ -19,6 +19,7 @@ private:
 	Ui::QtModelCreateClass ui;
 	//当前保存图像序号
 	int m_isaveImageindex;
+	void GetNextImageIndex();
 	//加载路径
 	QString m_SvideoPath;
 	//判断是否为视频加载

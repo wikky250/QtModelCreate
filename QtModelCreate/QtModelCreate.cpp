@@ -32,6 +32,17 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	m_LabelShow->setMouseTracking(true);
 }
 
+void QtModelCreate::GetNextImageIndex()
+{
+	QString dir_str = AppPath + "/JPEGImages/";
+	QDir dir(dir_str);
+	QStringList filter;
+	filter << "*.jpg";
+	dir.setNameFilters(filter);
+	QStringList fileInfoList = dir.entryList(filter);
+	m_isaveImageindex = fileInfoList.size();
+}
+
 void QtModelCreate::ShowPopWindow(QPoint point)
 {
 	QtPoPWindow dlg;
@@ -55,13 +66,8 @@ void QtModelCreate::ShowPopWindow(QPoint point)
 					return;
 				}
 			}
-			QStringList filter;
-			filter << "*.jpg";
-			dir.setNameFilters(filter);
-			QFileInfoList fileInfoList = dir.entryInfoList(filter);
-			m_isaveImageindex = fileInfoList.size();
+			GetNextImageIndex();
 		}
-
 	}
 }
 
@@ -284,11 +290,7 @@ void QtModelCreate::IntiCheckList()
 			return;
 		}
 	}
-	QStringList filter;
-	filter << "*.jpg";
-	dir.setNameFilters(filter);
-	QFileInfoList fileInfoList = dir.entryInfoList(filter);
-	m_isaveImageindex = fileInfoList.size();
+	GetNextImageIndex();
 	////
 
 	
