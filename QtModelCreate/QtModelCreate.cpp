@@ -4,7 +4,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-	m_BisVideo = false;
+	m_iIsWhat = -1;
 	m_SvideoPath = "";
 	m_bButton = false;
 	m_bshowImg = false;
@@ -103,13 +103,15 @@ void QtModelCreate::InitWindow()
 	QMenuBar* pMenuBar = ui.menuBar;
 	pMenuBar->addMenu(pMenuA);
 
-	ui.pb_Start->installEventFilter(this);
+	//ui.pb_Start->installEventFilter(this);
+	ui.imagelist->installEventFilter(this);
 
+	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *,QListWidgetItem *)));
 
 }
 bool QtModelCreate::eventFilter(QObject * watched, QEvent * event)
 {
-	if (watched == ui.pb_Start)
+	//if (watched == ui.pb_Start)
 	{
 		if (event->type() == QEvent::KeyRelease)
 		{
@@ -206,13 +208,18 @@ void QtModelCreate::mousePressEvent(QMouseEvent * event)
 }
 void QtModelCreate::mouseReleaseEvent(QMouseEvent * event)
 {
-	//if (ui.label_show->geometry().contains(this->mapFromGlobal(QCursor::pos())) && event->button() == Qt::LeftButton)
 	{
 		if (m_bshowImg)
 		{
 			m_bButton = false;
 		}
 	}
+}
+void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem *previous)
+{
+	QString path = m_SvideoPath + current->text();
+	Mat img = imread(path.toStdString().c_str());
+	onShowImage(img);
 }
 void QtModelCreate::closeEvent(QCloseEvent * event)
 {
@@ -339,6 +346,28 @@ void QtModelCreate::SaveCheckList()
 	}
 
 }
+void QtModelCreate::GetImageList()
+{
+	if (1 == m_iIsWhat)
+	{
+		QDir prober(m_SvideoPath);
+		QStringList filter;
+		filter << "*.jpg";
+		prober.setNameFilters(filter);
+		m_qslImageList = prober.entryList(filter);
+		if (m_qslImageList.size()<=0)
+		{
+			QMessageBox::warning(nullptr, QString::fromLocal8Bit("读取目录存在异常"), QString::fromLocal8Bit("目录中未找到JPG图片"));
+			m_iIsWhat = -1;
+			m_SvideoPath = "";
+			return;
+		}
+		else
+		{
+			ui.imagelist->addItems(m_qslImageList);
+		}
+	}
+}
 void QtModelCreate::onConvertPlay()
 {
 	m_Pause = !m_Pause;
@@ -396,11 +425,17 @@ void QtModelCreate::onOpen()
 	if ("OpenVideo" == pAvt->text())
 	{
 		m_SvideoPath = QFileDialog::getOpenFileName(this, tr("Find Files"), QDir::currentPath(), QString::fromLocal8Bit("视频文件(*.mp4;*.avi);;所有文件(*.*)"));
-		m_BisVideo = true;
+		if (m_SvideoPath!="")
+		{
+			m_iIsWhat = 0;
+		}
 	}
 	if ("OpenFile" == pAvt->text())
 	{
 		m_SvideoPath = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("打开文件夹"), QDir::currentPath());
+		m_SvideoPath += "/";
+		m_iIsWhat = 1;
+		GetImageList();
 	}
 	if ("OpenImage" == pAvt->text())
 	{

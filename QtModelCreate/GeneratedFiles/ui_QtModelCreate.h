@@ -11,10 +11,11 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QListWidget>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
-#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
@@ -25,8 +26,9 @@ class Ui_QtModelCreateClass
 {
 public:
     QWidget *centralWidget;
+    QGridLayout *gridLayout;
     QLabel *label_show;
-    QPushButton *pb_Start;
+    QListWidget *imagelist;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -35,23 +37,37 @@ public:
     {
         if (QtModelCreateClass->objectName().isEmpty())
             QtModelCreateClass->setObjectName(QStringLiteral("QtModelCreateClass"));
-        QtModelCreateClass->resize(938, 722);
+        QtModelCreateClass->resize(1070, 722);
         QtModelCreateClass->setMouseTracking(true);
         centralWidget = new QWidget(QtModelCreateClass);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         centralWidget->setMouseTracking(true);
+        gridLayout = new QGridLayout(centralWidget);
+        gridLayout->setSpacing(6);
+        gridLayout->setContentsMargins(11, 11, 11, 11);
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
         label_show = new QLabel(centralWidget);
         label_show->setObjectName(QStringLiteral("label_show"));
-        label_show->setGeometry(QRect(10, 0, 801, 651));
+        QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(label_show->sizePolicy().hasHeightForWidth());
+        label_show->setSizePolicy(sizePolicy);
         label_show->setMouseTracking(true);
         label_show->setFrameShape(QFrame::Box);
-        pb_Start = new QPushButton(centralWidget);
-        pb_Start->setObjectName(QStringLiteral("pb_Start"));
-        pb_Start->setGeometry(QRect(840, 10, 75, 23));
+
+        gridLayout->addWidget(label_show, 0, 0, 2, 1);
+
+        imagelist = new QListWidget(centralWidget);
+        imagelist->setObjectName(QStringLiteral("imagelist"));
+        imagelist->setMaximumSize(QSize(150, 16777215));
+
+        gridLayout->addWidget(imagelist, 0, 1, 2, 1);
+
         QtModelCreateClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(QtModelCreateClass);
         menuBar->setObjectName(QStringLiteral("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 938, 23));
+        menuBar->setGeometry(QRect(0, 0, 1070, 23));
         QtModelCreateClass->setMenuBar(menuBar);
         mainToolBar = new QToolBar(QtModelCreateClass);
         mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
@@ -61,7 +77,6 @@ public:
         QtModelCreateClass->setStatusBar(statusBar);
 
         retranslateUi(QtModelCreateClass);
-        QObject::connect(pb_Start, SIGNAL(clicked()), QtModelCreateClass, SLOT(onStartPlay()));
 
         QMetaObject::connectSlotsByName(QtModelCreateClass);
     } // setupUi
@@ -70,7 +85,6 @@ public:
     {
         QtModelCreateClass->setWindowTitle(QApplication::translate("QtModelCreateClass", "QtModelCreate", nullptr));
         label_show->setText(QApplication::translate("QtModelCreateClass", "TextLabel", nullptr));
-        pb_Start->setText(QApplication::translate("QtModelCreateClass", "\346\222\255\346\224\276", nullptr));
     } // retranslateUi
 
 };

@@ -23,7 +23,8 @@ private:
 	//加载路径
 	QString m_SvideoPath;
 	//判断是否为视频加载
-	bool m_BisVideo;
+	//0:视频 1:图像文件夹 2:单图
+	int m_iIsWhat;
 	//暂停播放
 	bool m_Pause;
 	//确定后是否继续
@@ -47,6 +48,9 @@ private:
 	bool m_bModelChange;
 
 
+	QStringList m_qslImageList;
+	void GetImageList();
+
 	//label_show原始图
 	cv::Mat m_MatLiveImg;
 	cv::Rect m_RectOpencv;
@@ -66,6 +70,7 @@ private:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 		//槽函数
+	void onChangeListItem(QListWidgetItem *,QListWidgetItem *);
 	void closeEvent(QCloseEvent *event);
 	void onStartPlay();
 	void onOpen();
