@@ -10,6 +10,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	m_bshowImg = false;
 	m_Pause = true;
 	m_bContinue = false;
+	m_bModelChange = false;
 	m_isaveImageindex = -1;
 	AppPath = qApp->applicationDirPath();
 	InitWindow();
@@ -47,7 +48,7 @@ void QtModelCreate::ShowPopWindow(QPoint point)
 {
 	QtPoPWindow dlg;
 	dlg.move(point);
-	QObject::connect(&dlg, SIGNAL(Signal_CreateModel(QString)), this, SLOT(onCreateModel(QString)));
+	QObject::connect(&dlg, SIGNAL(Signal_CreateModel(QString, int)), this, SLOT(onCreateModel(QString, int)));
 	int result = dlg.exec();
 	if (QDialog::Accepted == result)
 	{
@@ -55,6 +56,7 @@ void QtModelCreate::ShowPopWindow(QPoint point)
 		{
 			//若未暂停视频，点击OK则继续播放
 			emit Signal_ConvertPlay();
+
 			QString dir_str = AppPath + "/JPEGImages/";
 			QDir dir;
 			if (!dir.exists(dir_str))
@@ -118,6 +120,7 @@ bool QtModelCreate::eventFilter(QObject * watched, QEvent * event)
 	if (event->type() == QEvent::MouseMove) {
 		return false;
 	}
+
 	return false;
 }
 void QtModelCreate::mouseMoveEvent(QMouseEvent * event)
@@ -126,15 +129,15 @@ void QtModelCreate::mouseMoveEvent(QMouseEvent * event)
 	QPoint poi = QCursor::pos();
 	if (m_bshowImg)
 	{
-		if (m_LabelShow->geometry().contains(this->mapFromGlobal(poi)))
+		if (m_LabelShow->geometry().contains(m_LabelShow->mapFromGlobal(poi)))
 		{
 			setCursor(Qt::CrossCursor);
 			if (m_bButton)
 			{
 				QRect rec = m_LabelShow->geometry();
 				QPoint pt = m_LabelShow->mapFromGlobal(poi);
-				pt.setX(pt.x() /*- rec.x() */- m_LabelShow->frameWidth());
-				pt.setY(pt.y() /*- rec.y() */- m_LabelShow->frameWidth());
+				pt.setX(pt.x() /*- rec.x() */ - m_LabelShow->frameWidth());
+				pt.setY(pt.y() /*- rec.y() */ - m_LabelShow->frameWidth());
 				double scale_x = m_MatLiveImg.cols*1.0 / (rec.width() - m_LabelShow->frameWidth() * 2);
 				double scale_y = m_MatLiveImg.rows*1.0 / (rec.height() - m_LabelShow->frameWidth() * 2);
 				if (pt.x() > m_PointOriginal.x())
@@ -160,6 +163,7 @@ void QtModelCreate::mouseMoveEvent(QMouseEvent * event)
 				cv::Mat img2show;
 				cvtColor(m_MatLiveImg, img2show, CV_BGR2RGB);
 				m_RectOpencv = cv::Rect(m_RectToDraw.x()*scale_x, m_RectToDraw.y()*scale_y, m_RectToDraw.width()*scale_x, m_RectToDraw.height()*scale_y);
+				m_OriRect = QRect(m_RectOpencv.x, m_RectOpencv.y, m_RectOpencv.width, m_RectOpencv.height);
 				cv::rectangle(img2show, m_RectOpencv, cv::Scalar(255, 0, 0), 5, 8, 0);
 				cv::resize(img2show, img2show, Size(m_LabelShow->width(), m_LabelShow->height()));
 				QImage disImage = QImage((const unsigned char*)(img2show.data), img2show.cols, img2show.rows, img2show.step, QImage::Format_RGB888);
@@ -176,33 +180,43 @@ void QtModelCreate::mouseMoveEvent(QMouseEvent * event)
 }
 void QtModelCreate::mousePressEvent(QMouseEvent * event)
 {
-	if (ui.label_show->geometry().contains(this->mapFromGlobal(QCursor::pos())) && event->button() == Qt::LeftButton)
+	if (ui.label_show->geometry().contains(m_LabelShow->mapFromGlobal(QCursor::pos())))
 	{
 		if (m_bshowImg)
 		{
-			QRect rec = m_LabelShow->geometry();
-			m_PointOriginal = m_LabelShow->mapFromGlobal(QCursor::pos());
-			m_PointOriginal.setX(m_PointOriginal.x() /*- rec.x()*/ - m_LabelShow->frameWidth());
-			m_PointOriginal.setY(m_PointOriginal.y() /*- rec.y()*/ - m_LabelShow->frameWidth());
-			m_bButton = true;
-			if (true == m_Pause)
+			if (event->button() == Qt::LeftButton)
 			{
-				emit Signal_ConvertPlay();
-				m_bContinue = true;
+				QRect rec = m_LabelShow->geometry();
+				m_PointOriginal = m_LabelShow->mapFromGlobal(QCursor::pos());
+				m_PointOriginal.setX(m_PointOriginal.x() /*- rec.x()*/ - m_LabelShow->frameWidth());
+				m_PointOriginal.setY(m_PointOriginal.y() /*- rec.y()*/ - m_LabelShow->frameWidth());
+				m_bButton = true;
+				if (true == m_Pause)
+				{
+					emit Signal_ConvertPlay();
+					m_bContinue = true;
+				}
+			}
+			if (event->button() == Qt::RightButton)
+			{
+				ShowPopWindow(QCursor::pos());
 			}
 		}
 	}
 }
 void QtModelCreate::mouseReleaseEvent(QMouseEvent * event)
 {
-	if (ui.label_show->geometry().contains(this->mapFromGlobal(QCursor::pos())) && event->button() == Qt::LeftButton)
+	//if (ui.label_show->geometry().contains(this->mapFromGlobal(QCursor::pos())) && event->button() == Qt::LeftButton)
 	{
 		if (m_bshowImg)
 		{
-			ShowPopWindow(QCursor::pos());
+			m_bButton = false;
 		}
 	}
-	m_bButton = false;
+}
+void QtModelCreate::closeEvent(QCloseEvent * event)
+{
+	SaveCheckList();
 }
 void QtModelCreate::onStartPlay()
 {
@@ -224,6 +238,7 @@ void QtModelCreate::virtualPress(QKeyEvent * event)
 	case Qt::Key_Space:
 	{
 		emit Signal_ConvertPlay();
+		GetNextImageIndex();
 		m_bContinue = false;
 		break;
 	}
@@ -249,11 +264,11 @@ void QtModelCreate::IntiCheckList()
 	{
 		QByteArray line = file.readLine();
 		QString str(line);
-		int startindex = str.lastIndexOf("/")+1;
-		int endindex = str.lastIndexOf(".jpg")+4;
-		QString name = str.mid(startindex, endindex+1 - startindex);
-		QString strrect = str.right(endindex-1);
-		QStringList listRect = strrect.split(QRegExp("[,*/^]"),QString::SkipEmptyParts);
+		int startindex = str.lastIndexOf("/") + 1;
+		int endindex = str.lastIndexOf(".jpg") + 4;
+		QString name = str.mid(startindex, endindex + 1 - startindex);
+		QString strrect = str.right(endindex - 1);
+		QStringList listRect = strrect.split(QRegExp("[,*/^]"), QString::SkipEmptyParts);
 		if (0 != listRect.size() % 5)
 		{
 			QMessageBox::warning(nullptr, QString::fromLocal8Bit("严重错误！"), QString("test.txt") + QString::fromLocal8Bit("格式错误"));
@@ -265,7 +280,7 @@ void QtModelCreate::IntiCheckList()
 		rectandsimple.path = str;
 		rectandsimple.name = name;
 
-		while (indexRect<nRectCount)
+		while (indexRect < nRectCount)
 		{
 			rectandsimple.ImgObject.append(
 				QRect(listRect[indexRect + 0].toInt(),
@@ -291,9 +306,38 @@ void QtModelCreate::IntiCheckList()
 		}
 	}
 	GetNextImageIndex();
-	////
+}
+void QtModelCreate::SaveCheckList()
+{
+	QFile file(AppPath + "/test.txt");
+	if (!file.open(QIODevice::Truncate | QIODevice::ReadWrite))
+	{
+		QMessageBox::warning(nullptr, QString::fromLocal8Bit("配置错误"), QString::fromLocal8Bit("未找到predefined_classes文件"));
+	}
 
-	
+	QTextStream in(&file);
+	QList<DefineSave>::iterator it_end = SaveModel.end();
+	for (QList<DefineSave>::iterator it = SaveModel.begin();it!= it_end;it++)
+	{
+		if ((*it).ImgObject.size()!= (*it).ImgObject.size())
+		{
+			QMessageBox::warning(nullptr, QString::fromLocal8Bit("模板创建错误"), QString::fromLocal8Bit("模板框与模板类数据不符")+(*it).name);
+			continue;
+		}
+		QString str_sample = " ";
+		for (int i = 0;i < (*it).ImgObject.size();i++)
+		{
+			str_sample +=
+				QString::number((*it).ImgObject[i].x()) + "," +
+				QString::number((*it).ImgObject[i].y()) + "," +
+				QString::number((*it).ImgObject[i].width()) + "," +
+				QString::number((*it).ImgObject[i].height()) + "," + 
+				QString::number((*it).ImgObjectSample[i]) + " ";
+		}
+
+		in << it->path + str_sample << endl;
+	}
+
 }
 void QtModelCreate::onConvertPlay()
 {
@@ -304,13 +348,13 @@ void QtModelCreate::onConvertPlay()
 void QtModelCreate::onShowImage(Mat image)
 {
 	image.copyTo(m_MatLiveImg);
-	cv::resize(image, image, Size(m_LabelShow->width(),m_LabelShow->height()));
+	cv::resize(image, image, Size(m_LabelShow->width(), m_LabelShow->height()));
 	cvtColor(image, image, CV_BGR2RGB);
 	QImage disImage = QImage((const unsigned char*)(image.data), image.cols, image.rows, image.step, QImage::Format_RGB888);
 	m_LabelShow->setPixmap(QPixmap::fromImage(disImage));
 	m_bshowImg = true;
 }
-void QtModelCreate::onCreateModel(QString modelname)
+void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 {
 	if ("\n" == modelname.right(1))
 	{
@@ -322,6 +366,28 @@ void QtModelCreate::onCreateModel(QString modelname)
 	str.sprintf("%05d", m_isaveImageindex);
 	QString path = dir_str + str + ".jpg";
 	imwrite(path.toStdString(), m_MatLiveImg);
+
+	int nCount = SaveModel.size();
+	bool b_repeat = false;
+	for (size_t i = 0;i < nCount;i++)
+	{
+		if (str + ".jpg" == SaveModel[i].name)
+		{
+			b_repeat = true;
+			SaveModel[i].ImgObject.append(m_OriRect);
+			SaveModel[i].ImgObjectSample.append(sampleindex);
+			break;
+		}
+	}
+	if (!b_repeat)
+	{
+		DefineSave rectandsimple;
+		rectandsimple.path = "/JPEGImages/" + str + ".jpg";
+		rectandsimple.name = str + ".jpg";
+		rectandsimple.ImgObject.append(m_OriRect);
+		rectandsimple.ImgObjectSample.append(sampleindex);
+		SaveModel.append(rectandsimple);
+	}
 }
 void QtModelCreate::onOpen()
 {
@@ -342,3 +408,4 @@ void QtModelCreate::onOpen()
 	}
 	return;
 }
+

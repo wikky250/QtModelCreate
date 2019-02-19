@@ -80,7 +80,8 @@ void QtPoPWindow::onOK()
 			SaveParam();
 		}
 	}
-	emit Signal_CreateModel(m_sResult);
+	int nSelect = ui.ClassList->currentRow();
+	emit Signal_CreateModel(m_sResult,nSelect);
 	QDialog::accept();
 }
 

@@ -43,6 +43,8 @@ private:
 	//初始化已存在的模板文件
 	QList<DefineSave> SaveModel;
 	void IntiCheckList();
+	void SaveCheckList();
+	bool m_bModelChange;
 
 
 	//label_show原始图
@@ -54,7 +56,7 @@ private:
 	bool m_bButton;
 	QPoint m_PointOriginal;
 	QRect m_RectToDraw;
-
+	QRect m_OriRect;
 	public slots:
 	//重写
 	//void keyPressEvent(QKeyEvent * event);
@@ -64,10 +66,11 @@ private:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 		//槽函数
+	void closeEvent(QCloseEvent *event);
 	void onStartPlay();
 	void onOpen();
 	void onClose();
 	void onConvertPlay();
 	void onShowImage(Mat);
-	void onCreateModel(QString modelname);
+	void onCreateModel(QString modelname,int sampleindex);
 };
