@@ -31,6 +31,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	setMouseTracking(true);
 	ui.centralWidget->setMouseTracking(true);
 	m_LabelShow->setMouseTracking(true);
+	UpdateLabelList("SS");
 }
 
 void QtModelCreate::GetNextImageIndex()
@@ -105,6 +106,7 @@ void QtModelCreate::InitWindow()
 
 	//ui.pb_Start->installEventFilter(this);
 	ui.imagelist->installEventFilter(this);
+	ui.labellist->installEventFilter(this);
 
 	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *,QListWidgetItem *)));
 
@@ -250,9 +252,15 @@ void QtModelCreate::virtualPress(QKeyEvent * event)
 		break;
 	}
 	case Qt::Key_Z:
+	{
+		ui.imagelist->setCurrentRow(ui.imagelist->currentRow() - 1<0?0: ui.imagelist->currentRow() - 1);
 		break;
-	case Qt::Key_X:
+	}
+	case Qt::Key_C:
+	{
+		ui.imagelist->setCurrentRow(ui.imagelist->currentRow() + 1>=ui.imagelist->count() ? ui.imagelist->count()-1 : ui.imagelist->currentRow() + 1);
 		break;
+	}
 	case Qt::Key_S:
 		break;
 	default:
@@ -367,6 +375,29 @@ void QtModelCreate::GetImageList()
 			ui.imagelist->addItems(m_qslImageList);
 		}
 	}
+}
+void QtModelCreate::UpdateLabelList(QString str)
+{
+	DefineSave temp;
+	size_t ncount = SaveModel.size();
+	for (size_t i = 0;i < ncount;i++)
+	{
+		if (str == SaveModel[i].name)
+		{
+			temp = SaveModel[i];
+			break;
+		}
+	}
+		QListWidgetItem * item = new QListWidgetItem();
+		QCheckBox * box = new QCheckBox("sss1");
+		box->setCheckable(true);
+		ui.labellist->addItem(item);
+		ui.labellist->setItemWidget(item, box);
+		item = new QListWidgetItem();
+		box = new QCheckBox("sss2");
+		box->setCheckable(true);
+		ui.labellist->addItem(item);
+		ui.labellist->setItemWidget(item, box);
 }
 void QtModelCreate::onConvertPlay()
 {

@@ -50,6 +50,7 @@ private:
 
 	QStringList m_qslImageList;
 	void GetImageList();
+	void UpdateLabelList(QString str);
 
 	//label_showԭʼͼ
 	cv::Mat m_MatLiveImg;

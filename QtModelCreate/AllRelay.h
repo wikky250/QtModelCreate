@@ -14,6 +14,7 @@
 #include <list>
 #include <QStandardItemModel>
 #include <QList>
+#include <QCheckBox>
 #pragma region OpenCV
 
 #include "cv.hpp"
