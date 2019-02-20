@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QListWidget>
@@ -28,10 +29,11 @@ public:
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QLabel *label;
-    QListWidget *imagelist;
-    QLabel *label_2;
-    QLabel *label_show;
     QListWidget *labellist;
+    QLabel *label_show;
+    QLabel *label_2;
+    QListWidget *imagelist;
+    QCheckBox *checkBox;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -54,16 +56,11 @@ public:
 
         gridLayout->addWidget(label, 2, 1, 1, 1);
 
-        imagelist = new QListWidget(centralWidget);
-        imagelist->setObjectName(QStringLiteral("imagelist"));
-        imagelist->setMaximumSize(QSize(200, 16777215));
+        labellist = new QListWidget(centralWidget);
+        labellist->setObjectName(QStringLiteral("labellist"));
+        labellist->setMaximumSize(QSize(200, 100));
 
-        gridLayout->addWidget(imagelist, 3, 1, 1, 1);
-
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 1, 1, 1);
+        gridLayout->addWidget(labellist, 1, 1, 1, 1);
 
         label_show = new QLabel(centralWidget);
         label_show->setObjectName(QStringLiteral("label_show"));
@@ -75,13 +72,23 @@ public:
         label_show->setMouseTracking(true);
         label_show->setFrameShape(QFrame::Box);
 
-        gridLayout->addWidget(label_show, 0, 0, 4, 1);
+        gridLayout->addWidget(label_show, 0, 0, 5, 1);
 
-        labellist = new QListWidget(centralWidget);
-        labellist->setObjectName(QStringLiteral("labellist"));
-        labellist->setMaximumSize(QSize(200, 100));
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
 
-        gridLayout->addWidget(labellist, 1, 1, 1, 1);
+        gridLayout->addWidget(label_2, 0, 1, 1, 1);
+
+        imagelist = new QListWidget(centralWidget);
+        imagelist->setObjectName(QStringLiteral("imagelist"));
+        imagelist->setMaximumSize(QSize(200, 16777215));
+
+        gridLayout->addWidget(imagelist, 4, 1, 1, 1);
+
+        checkBox = new QCheckBox(centralWidget);
+        checkBox->setObjectName(QStringLiteral("checkBox"));
+
+        gridLayout->addWidget(checkBox, 3, 1, 1, 1);
 
         QtModelCreateClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(QtModelCreateClass);
@@ -104,8 +111,9 @@ public:
     {
         QtModelCreateClass->setWindowTitle(QApplication::translate("QtModelCreateClass", "QtModelCreate", nullptr));
         label->setText(QApplication::translate("QtModelCreateClass", "\345\233\276\347\211\207\345\210\227\350\241\250", nullptr));
-        label_2->setText(QApplication::translate("QtModelCreateClass", "\345\267\262\346\240\207\346\263\250\351\241\271", nullptr));
         label_show->setText(QApplication::translate("QtModelCreateClass", "TextLabel", nullptr));
+        label_2->setText(QApplication::translate("QtModelCreateClass", "\345\267\262\346\240\207\346\263\250\351\241\271", nullptr));
+        checkBox->setText(QApplication::translate("QtModelCreateClass", "CheckBox", nullptr));
     } // retranslateUi
 
 };

@@ -14,7 +14,6 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	m_isaveImageindex = -1;
 	AppPath = qApp->applicationDirPath();
 	InitWindow();
-	IntiCheckList();
 	QObject::connect(this, SIGNAL(Signal_ConvertPlay()), this, SLOT(onConvertPlay()));
 	m_LabelShow = this->findChild<QLabel *>("label_show");
 	int zz = m_LabelShow->frameWidth();
@@ -31,7 +30,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 	setMouseTracking(true);
 	ui.centralWidget->setMouseTracking(true);
 	m_LabelShow->setMouseTracking(true);
-	UpdateLabelList("SS");
+	//UpdateLabelList("SS");
 }
 
 void QtModelCreate::GetNextImageIndex()
@@ -222,6 +221,7 @@ void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem 
 	QString path = m_SvideoPath + current->text();
 	Mat img = imread(path.toStdString().c_str());
 	onShowImage(img);
+	UpdateLabelList(current->text());
 }
 void QtModelCreate::closeEvent(QCloseEvent * event)
 {
@@ -275,14 +275,16 @@ void QtModelCreate::IntiCheckList()
 	{
 		QMessageBox::warning(nullptr, QString::fromLocal8Bit("配置错误"), QString::fromLocal8Bit("未找到predefined_classes文件"));
 	}
+	QString str;
 	while (!file.atEnd())
 	{
 		QByteArray line = file.readLine();
-		QString str(line);
+		str = line;
 		int startindex = str.lastIndexOf("/") + 1;
 		int endindex = str.lastIndexOf(".jpg") + 4;
 		QString name = str.mid(startindex, endindex + 1 - startindex);
 		QString strrect = str.right(endindex - 1);
+		strrect = strrect.trimmed();
 		QStringList listRect = strrect.split(QRegExp("[,*/^]"), QString::SkipEmptyParts);
 		if (0 != listRect.size() % 5)
 		{
@@ -292,8 +294,8 @@ void QtModelCreate::IntiCheckList()
 		int nRectCount = listRect.size() / 5;
 		int indexRect = 0;
 		DefineSave rectandsimple;
-		rectandsimple.path = str;
-		rectandsimple.name = name;
+		rectandsimple.path = str.left(str.lastIndexOf(".jpg") + 4);
+		rectandsimple.name = name.trimmed();
 
 		while (indexRect < nRectCount)
 		{
@@ -308,16 +310,21 @@ void QtModelCreate::IntiCheckList()
 		SaveModel.append(rectandsimple);
 	}
 
-	//保存图像序号
-	QString dir_str = AppPath + "/JPEGImages/";
-	QDir dir;
-	if (!dir.exists(dir_str))
+	if (m_iIsWhat==1)
+		m_SvideoPath = AppPath +"/"+ str.left(str.lastIndexOf("/") );
+	if (m_iIsWhat==0)
 	{
-		bool res = dir.mkdir(dir_str);
-		if (!res)
+		//保存图像序号
+		QString dir_str = AppPath + "/JPEGImages/";
+		QDir dir;
+		if (!dir.exists(dir_str))
 		{
-			QMessageBox::warning(nullptr, QString::fromLocal8Bit("创建文件夹警告"), QString::fromLocal8Bit("模板创建失败"));
-			return;
+			bool res = dir.mkdir(dir_str);
+			if (!res)
+			{
+				QMessageBox::warning(nullptr, QString::fromLocal8Bit("创建文件夹警告"), QString::fromLocal8Bit("模板创建失败"));
+				return;
+			}
 		}
 	}
 	GetNextImageIndex();
@@ -378,6 +385,21 @@ void QtModelCreate::GetImageList()
 }
 void QtModelCreate::UpdateLabelList(QString str)
 {
+	ui.labellist->clear();
+	QStringList _listClass;
+	QFile file(AppPath + "/predefined_classes.txt");
+
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+		QMessageBox::warning(nullptr, QString::fromLocal8Bit("配置错误"), QString::fromLocal8Bit("未找到predefined_classes文件"));
+	}
+	while (!file.atEnd())
+	{
+		QByteArray line = file.readLine();
+		QString str(line);
+		_listClass.append(str);
+	}
+	file.close();
 	DefineSave temp;
 	size_t ncount = SaveModel.size();
 	for (size_t i = 0;i < ncount;i++)
@@ -388,16 +410,19 @@ void QtModelCreate::UpdateLabelList(QString str)
 			break;
 		}
 	}
-		QListWidgetItem * item = new QListWidgetItem();
-		QCheckBox * box = new QCheckBox("sss1");
+
+	for (int i=0;i<temp.ImgObjectSample.size();i++)
+	{
+		QListWidgetItem * item = new QListWidgetItem(ui.labellist);
+		QCheckBox * box = new QCheckBox(ui.labellist);
 		box->setCheckable(true);
+		QFont fon = box->font();
+		fon.setPointSize(11);
+		box->setFont(fon);
 		ui.labellist->addItem(item);
 		ui.labellist->setItemWidget(item, box);
-		item = new QListWidgetItem();
-		box = new QCheckBox("sss2");
-		box->setCheckable(true);
-		ui.labellist->addItem(item);
-		ui.labellist->setItemWidget(item, box);
+		box->setText(_listClass[temp.ImgObjectSample[i]]);
+	}
 }
 void QtModelCreate::onConvertPlay()
 {
@@ -463,10 +488,13 @@ void QtModelCreate::onOpen()
 	}
 	if ("OpenFile" == pAvt->text())
 	{
-		m_SvideoPath = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("打开文件夹"), QDir::currentPath());
-		m_SvideoPath += "/";
 		m_iIsWhat = 1;
+		IntiCheckList();
+		//m_SvideoPath = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("打开文件夹"), QDir::currentPath());
+		m_SvideoPath += "/";
+
 		GetImageList();
+
 	}
 	if ("OpenImage" == pAvt->text())
 	{
