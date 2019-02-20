@@ -128,7 +128,6 @@ bool QtModelCreate::eventFilter(QObject * watched, QEvent * event)
 }
 void QtModelCreate::mouseMoveEvent(QMouseEvent * event)
 {
-
 	QPoint poi = QCursor::pos();
 	if (m_bshowImg)
 	{
@@ -178,7 +177,6 @@ void QtModelCreate::mouseMoveEvent(QMouseEvent * event)
 	}
 	else
 		setCursor(Qt::ArrowCursor);
-
 	return;
 }
 void QtModelCreate::mousePressEvent(QMouseEvent * event)
@@ -283,8 +281,9 @@ void QtModelCreate::IntiCheckList()
 		int startindex = str.lastIndexOf("/") + 1;
 		int endindex = str.lastIndexOf(".jpg") + 4;
 		QString name = str.mid(startindex, endindex + 1 - startindex);
-		QString strrect = str.right(endindex - 1);
+		QString strrect = str.right(str.length()-endindex - 1);
 		strrect = strrect.trimmed();
+		strrect.replace(" ", ",");
 		QStringList listRect = strrect.split(QRegExp("[,*/^]"), QString::SkipEmptyParts);
 		if (0 != listRect.size() % 5)
 		{
@@ -300,11 +299,11 @@ void QtModelCreate::IntiCheckList()
 		while (indexRect < nRectCount)
 		{
 			rectandsimple.ImgObject.append(
-				QRect(listRect[indexRect + 0].toInt(),
-					listRect[indexRect + 1].toInt(),
-					listRect[indexRect + 2].toInt(),
-					listRect[indexRect + 3].toInt()));
-			rectandsimple.ImgObjectSample.append(listRect[indexRect + 4].toInt());
+				QRect(listRect[indexRect * 5 + 0].toInt(),
+					listRect[indexRect * 5 + 1].toInt(),
+					listRect[indexRect * 5 + 2].toInt(),
+					listRect[indexRect * 5 + 3].toInt()));
+			rectandsimple.ImgObjectSample.append(listRect[indexRect * 5 + 4].toInt());
 			indexRect++;
 		}
 		SaveModel.append(rectandsimple);
@@ -380,6 +379,7 @@ void QtModelCreate::GetImageList()
 		else
 		{
 			ui.imagelist->addItems(m_qslImageList);
+
 		}
 	}
 }
@@ -400,18 +400,17 @@ void QtModelCreate::UpdateLabelList(QString str)
 		_listClass.append(str);
 	}
 	file.close();
-	DefineSave temp;
 	size_t ncount = SaveModel.size();
 	for (size_t i = 0;i < ncount;i++)
 	{
 		if (str == SaveModel[i].name)
 		{
-			temp = SaveModel[i];
+			m_SelectedDefineSave = SaveModel[i];
 			break;
 		}
 	}
 
-	for (int i=0;i<temp.ImgObjectSample.size();i++)
+	for (int i=0;i<m_SelectedDefineSave.ImgObjectSample.size();i++)
 	{
 		QListWidgetItem * item = new QListWidgetItem(ui.labellist);
 		QCheckBox * box = new QCheckBox(ui.labellist);
@@ -419,9 +418,10 @@ void QtModelCreate::UpdateLabelList(QString str)
 		QFont fon = box->font();
 		fon.setPointSize(11);
 		box->setFont(fon);
+		box->installEventFilter(this);
 		ui.labellist->addItem(item);
 		ui.labellist->setItemWidget(item, box);
-		box->setText(_listClass[temp.ImgObjectSample[i]]);
+		box->setText(_listClass[m_SelectedDefineSave.ImgObjectSample[i]]);
 	}
 }
 void QtModelCreate::onConvertPlay()

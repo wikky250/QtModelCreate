@@ -43,6 +43,7 @@ private:
 	void virtualPress(QKeyEvent * event);
 	//初始化已存在的模板文件
 	QList<DefineSave> SaveModel;
+	DefineSave m_SelectedDefineSave;
 	void IntiCheckList();
 	void SaveCheckList();
 	bool m_bModelChange;
