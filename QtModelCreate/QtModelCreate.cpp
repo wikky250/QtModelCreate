@@ -102,12 +102,12 @@ void QtModelCreate::InitWindow()
 
 	QMenuBar* pMenuBar = ui.menuBar;
 	pMenuBar->addMenu(pMenuA);
+	installEventFilter(this);
 
-	//ui.pb_Start->installEventFilter(this);
-	//ui.imagelist->installEventFilter(this);
-	ui.labellist->installEventFilter(this);
 	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *,QListWidgetItem *)));
 	flag = QObject::connect(ui.imagelist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
+	flag = QObject::connect(ui.labellist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
+
 
 }
 bool QtModelCreate::eventFilter(QObject * watched, QEvent * event)
@@ -192,7 +192,7 @@ void QtModelCreate::mousePressEvent(QMouseEvent * event)
 				m_PointOriginal.setX(m_PointOriginal.x() /*- rec.x()*/ - m_LabelShow->frameWidth());
 				m_PointOriginal.setY(m_PointOriginal.y() /*- rec.y()*/ - m_LabelShow->frameWidth());
 				m_bButton = true;
-				if (true == m_Pause)
+				if (true == m_Pause && 0 == m_iIsWhat)
 				{
 					emit Signal_ConvertPlay();
 					m_bContinue = true;
@@ -386,6 +386,7 @@ void QtModelCreate::GetImageList()
 void QtModelCreate::UpdateLabelList(QString str)
 {
 	ui.labellist->clear();
+	m_SelectedDefineSave = DefineSave();
 	QStringList _listClass;
 	QFile file(AppPath + "/predefined_classes.txt");
 

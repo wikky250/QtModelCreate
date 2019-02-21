@@ -31,7 +31,7 @@ public:
     QLabel *label;
     QLabel *label_show;
     QLabel *label_2;
-    QListWidget *labellist;
+	QMyListWidget *labellist;
 	QMyListWidget *imagelist;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -74,7 +74,7 @@ public:
 
         gridLayout->addWidget(label_2, 0, 1, 1, 1);
 
-        labellist = new QListWidget(centralWidget);
+        labellist = new QMyListWidget(centralWidget);
         labellist->setObjectName(QStringLiteral("labellist"));
         labellist->setMaximumSize(QSize(200, 100));
         labellist->setMouseTracking(false);
