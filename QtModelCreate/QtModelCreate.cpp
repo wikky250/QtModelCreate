@@ -447,17 +447,24 @@ void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 		modelname = modelname.left(modelname.length() - 1);
 	}
 
-	QString dir_str = AppPath + "/JPEGImages/";
 	QString str;
-	str.sprintf("%05d", m_isaveImageindex);
-	QString path = dir_str + str + ".jpg";
-	imwrite(path.toStdString(), m_MatLiveImg);
+	if (0==m_iIsWhat)
+	{
+		QString dir_str = AppPath + "/JPEGImages/";
+		str.sprintf("%05d", m_isaveImageindex)+".jpg";
+		QString path = dir_str + str + ".jpg";
+		imwrite(path.toStdString(), m_MatLiveImg);
+	}
+	if (1 == m_iIsWhat)
+	{
+		str = ui.imagelist->currentItem()->text();
+	}
 
 	int nCount = SaveModel.size();
 	bool b_repeat = false;
 	for (size_t i = 0;i < nCount;i++)
 	{
-		if (str + ".jpg" == SaveModel[i].name)
+		if (str == SaveModel[i].name)
 		{
 			b_repeat = true;
 			SaveModel[i].ImgObject.append(m_OriRect);
@@ -468,12 +475,22 @@ void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 	if (!b_repeat)
 	{
 		DefineSave rectandsimple;
-		rectandsimple.path = "/JPEGImages/" + str + ".jpg";
-		rectandsimple.name = str + ".jpg";
+		if (0==m_iIsWhat)
+		{
+			rectandsimple.path = "JPEGImages/" + str + ".jpg";
+			rectandsimple.name = str + ".jpg";
+		}
+		if (1==m_iIsWhat)
+		{
+			str = ui.imagelist->currentItem()->text();
+			rectandsimple.path = "JPEGImages/" + str;
+			rectandsimple.name = str;
+		}
 		rectandsimple.ImgObject.append(m_OriRect);
 		rectandsimple.ImgObjectSample.append(sampleindex);
 		SaveModel.append(rectandsimple);
 	}
+	UpdateLabelList(str);
 }
 void QtModelCreate::onOpen()
 {
