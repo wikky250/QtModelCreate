@@ -227,11 +227,9 @@ void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem 
 		onShowImage(img);
 		UpdateLabelList(current->text());
 	}
-	if (listwidget->objectName() == "labellist")
-	{
-		listwidget->
-		QMessageBox::about(nullptr, QString::fromLocal8Bit("LabelList"), );
-	}
+	//if (listwidget->objectName() == "labellist")
+	//{
+	//}
 }
 void QtModelCreate::closeEvent(QCloseEvent * event)
 {
@@ -507,6 +505,7 @@ void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 void QtModelCreate::onSelectLabel(QModelIndex modelindex)
 {
 	QString strTemp = modelindex.data().toString();
+	QMessageBox::about(nullptr, QString::fromLocal8Bit("LabelList"), strTemp);
 }
 void QtModelCreate::onOpen()
 {
