@@ -42,6 +42,9 @@
     <ClCompile Include="QtPoPWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AllRelay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtModelCreate.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files</Filter>
     </QtMoc>
     <QtMoc Include="QtPoPWindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="AllRelay.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>
@@ -66,10 +72,5 @@
     <QtRcc Include="QtModelCreate.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AllRelay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

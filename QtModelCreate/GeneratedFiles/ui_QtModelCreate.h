@@ -19,6 +19,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
+#include <AllRelay.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -29,9 +30,9 @@ public:
     QGridLayout *gridLayout;
     QLabel *label;
     QLabel *label_show;
-    QListWidget *labellist;
-    QListWidget *imagelist;
     QLabel *label_2;
+    QListWidget *labellist;
+	QMyListWidget *imagelist;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -51,6 +52,7 @@ public:
         gridLayout->setObjectName(QStringLiteral("gridLayout"));
         label = new QLabel(centralWidget);
         label->setObjectName(QStringLiteral("label"));
+        label->setMouseTracking(false);
 
         gridLayout->addWidget(label, 2, 1, 1, 1);
 
@@ -61,29 +63,30 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(label_show->sizePolicy().hasHeightForWidth());
         label_show->setSizePolicy(sizePolicy);
-        label_show->setMouseTracking(true);
+        label_show->setMouseTracking(false);
         label_show->setFrameShape(QFrame::Box);
 
         gridLayout->addWidget(label_show, 0, 0, 4, 1);
 
+        label_2 = new QLabel(centralWidget);
+        label_2->setObjectName(QStringLiteral("label_2"));
+        label_2->setMouseTracking(false);
+
+        gridLayout->addWidget(label_2, 0, 1, 1, 1);
+
         labellist = new QListWidget(centralWidget);
         labellist->setObjectName(QStringLiteral("labellist"));
         labellist->setMaximumSize(QSize(200, 100));
-        labellist->setMouseTracking(true);
+        labellist->setMouseTracking(false);
 
         gridLayout->addWidget(labellist, 1, 1, 1, 1);
 
-        imagelist = new QListWidget(centralWidget);
+        imagelist = new QMyListWidget(centralWidget);
         imagelist->setObjectName(QStringLiteral("imagelist"));
         imagelist->setMaximumSize(QSize(200, 16777215));
         imagelist->setMouseTracking(true);
 
         gridLayout->addWidget(imagelist, 3, 1, 1, 1);
-
-        label_2 = new QLabel(centralWidget);
-        label_2->setObjectName(QStringLiteral("label_2"));
-
-        gridLayout->addWidget(label_2, 0, 1, 1, 1);
 
         QtModelCreateClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(QtModelCreateClass);

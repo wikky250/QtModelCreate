@@ -104,10 +104,10 @@ void QtModelCreate::InitWindow()
 	pMenuBar->addMenu(pMenuA);
 
 	//ui.pb_Start->installEventFilter(this);
-	ui.imagelist->installEventFilter(this);
+	//ui.imagelist->installEventFilter(this);
 	ui.labellist->installEventFilter(this);
-
 	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *,QListWidgetItem *)));
+	flag = QObject::connect(ui.imagelist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
 
 }
 bool QtModelCreate::eventFilter(QObject * watched, QEvent * event)
