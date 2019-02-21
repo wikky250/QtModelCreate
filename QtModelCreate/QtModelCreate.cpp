@@ -105,8 +105,8 @@ void QtModelCreate::InitWindow()
 	installEventFilter(this);
 
 	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *,QListWidgetItem *)));
-	//flag = QObject::connect(ui.labellist, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *, QListWidgetItem *)));
-	flag = QObject::connect(ui.labellist, SIGNAL(clicked(QModelIndex)), this, SLOT(onSelectLabel(QModelIndex)));
+	flag = QObject::connect(ui.labellist, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *, QListWidgetItem *)));
+	//flag = QObject::connect(ui.labellist, SIGNAL(clicked(QModelIndex)), this, SLOT(onSelectLabel(QModelIndex)));
 	flag = QObject::connect(ui.imagelist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
 	flag = QObject::connect(ui.labellist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
 
@@ -227,9 +227,10 @@ void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem 
 		onShowImage(img);
 		UpdateLabelList(current->text());
 	}
-	//if (listwidget->objectName() == "labellist")
-	//{
-	//}
+	if (listwidget->objectName() == "labellist")
+	{
+		QMessageBox::about(nullptr, QString::fromLocal8Bit("LabelList"), "");
+	}
 }
 void QtModelCreate::closeEvent(QCloseEvent * event)
 {
