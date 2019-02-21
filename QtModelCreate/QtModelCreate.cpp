@@ -105,6 +105,8 @@ void QtModelCreate::InitWindow()
 	installEventFilter(this);
 
 	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *,QListWidgetItem *)));
+	//flag = QObject::connect(ui.labellist, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *, QListWidgetItem *)));
+	flag = QObject::connect(ui.labellist, SIGNAL(clicked(QModelIndex)), this, SLOT(onSelectLabel(QModelIndex)));
 	flag = QObject::connect(ui.imagelist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
 	flag = QObject::connect(ui.labellist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
 
@@ -216,10 +218,20 @@ void QtModelCreate::mouseReleaseEvent(QMouseEvent * event)
 }
 void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem *previous)
 {
-	QString path = m_SvideoPath + current->text();
-	Mat img = imread(path.toStdString().c_str());
-	onShowImage(img);
-	UpdateLabelList(current->text());
+
+	QMyListWidget *listwidget = qobject_cast<QMyListWidget *>(sender());
+	if (listwidget->objectName() == "imagelist")
+	{
+		QString path = m_SvideoPath + current->text();
+		Mat img = imread(path.toStdString().c_str());
+		onShowImage(img);
+		UpdateLabelList(current->text());
+	}
+	if (listwidget->objectName() == "labellist")
+	{
+		listwidget->
+		QMessageBox::about(nullptr, QString::fromLocal8Bit("LabelList"), );
+	}
 }
 void QtModelCreate::closeEvent(QCloseEvent * event)
 {
@@ -491,6 +503,10 @@ void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 		SaveModel.append(rectandsimple);
 	}
 	UpdateLabelList(str);
+}
+void QtModelCreate::onSelectLabel(QModelIndex modelindex)
+{
+	QString strTemp = modelindex.data().toString();
 }
 void QtModelCreate::onOpen()
 {

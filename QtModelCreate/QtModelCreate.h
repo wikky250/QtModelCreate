@@ -80,4 +80,5 @@ private:
 	void onConvertPlay();
 	void onShowImage(Mat);
 	void onCreateModel(QString modelname,int sampleindex);
+	void onSelectLabel(QModelIndex);
 };
