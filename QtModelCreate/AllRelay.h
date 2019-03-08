@@ -34,7 +34,7 @@ struct DefineSave
 	QString name;
 	QString path;
 	QList<QRect> ImgObject;
-	QList<int> ImgObjectSample;
+	QList<QString> ImgObjectSample;
 };
 
 class QMyListWidget : public QListWidget

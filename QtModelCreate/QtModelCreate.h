@@ -50,6 +50,7 @@ private:
 
 
 	QStringList m_qslImageList;
+	QStringList m_listClass;
 	void GetImageList();
 	void UpdateLabelList(QString str);
 

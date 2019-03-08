@@ -14,6 +14,10 @@ QtPoPWindow::QtPoPWindow(QDialog *parent)
 	{
 		QByteArray line = file.readLine();
 		QString str(line);
+
+		
+		if (str.right(1) == "\n")
+			str = str.left(str.lastIndexOf("\n"));
 		m_listClass.append(str);
 	}
 	file.close();
@@ -80,7 +84,7 @@ void QtPoPWindow::onOK()
 			SaveParam();
 		}
 	}
-	int nSelect = ui.ClassList->currentRow() + 1;
+	int nSelect = ui.ClassList->currentRow();
 	emit Signal_CreateModel(m_sResult,nSelect);
 	QDialog::accept();
 }
