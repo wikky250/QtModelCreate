@@ -44,6 +44,7 @@ private:
 	//初始化已存在的模板文件
 	QList<DefineSave> SaveModel;
 	DefineSave m_SelectedDefineSave;
+	int m_iSelectedDefineSave;
 	void IntiCheckList();
 	void SaveCheckList();
 	bool m_bModelChange;
@@ -64,6 +65,9 @@ private:
 	QPoint m_PointOriginal;
 	QRect m_RectToDraw;
 	QRect m_OriRect;
+
+
+	int m_iRepeatKey;
 	public slots:
 	//重写
 	//void keyPressEvent(QKeyEvent * event);

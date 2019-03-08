@@ -45,7 +45,7 @@ QtModelCreate::QtModelCreate(QWidget *parent)
 		m_listClass.append(str);
 	}
 	file.close();
-
+	m_iRepeatKey = -1;
 }
 
 void QtModelCreate::GetNextImageIndex()
@@ -119,7 +119,7 @@ void QtModelCreate::InitWindow()
 	pMenuBar->addMenu(pMenuA);
 	installEventFilter(this);
 
-	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *,QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *,QListWidgetItem *)));
+	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *, QListWidgetItem *)));
 	flag = QObject::connect(ui.labellist, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *, QListWidgetItem *)));
 	//flag = QObject::connect(ui.labellist, SIGNAL(clicked(QModelIndex)), this, SLOT(onSelectLabel(QModelIndex)));
 	flag = QObject::connect(ui.imagelist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
@@ -227,6 +227,7 @@ void QtModelCreate::mouseReleaseEvent(QMouseEvent * event)
 	{
 		if (m_bshowImg)
 		{
+			//int i = ui.labellist->currentRow();
 			m_bButton = false;
 		}
 	}
@@ -235,6 +236,10 @@ void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem 
 {
 
 	QMyListWidget *listwidget = qobject_cast<QMyListWidget *>(sender());
+	if (listwidget == NULL)
+	{
+		return;
+	}
 	if (listwidget->objectName() == "imagelist")
 	{
 		QString path = m_SvideoPath + current->text();
@@ -244,12 +249,37 @@ void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem 
 	}
 	if (listwidget->objectName() == "labellist")
 	{
-		QMessageBox::about(nullptr, QString::fromLocal8Bit("LabelList"), "");
+		QWidget* pwig = ui.labellist->itemWidget(current);
+		int i = ui.labellist->currentRow();
+
+		if (pwig != NULL)
+		{
+			QString str = ((QCheckBox*)pwig)->text();
+
+			int indexselectlabel = -1;
+			if (m_SelectedDefineSave.ImgObjectSample[ui.labellist->currentRow()] != str)
+			{
+				QMessageBox::warning(nullptr, QString::fromLocal8Bit("模板test错误"), QString::fromLocal8Bit("选取模板名称与实际模板名称不符！"));
+				return;
+			}
+			indexselectlabel = i;
+			cv::Mat img2show;
+			cvtColor(m_MatLiveImg, img2show, CV_BGR2RGB);
+			m_RectOpencv = cv::Rect(m_SelectedDefineSave.ImgObject[indexselectlabel].x(),
+				m_SelectedDefineSave.ImgObject[indexselectlabel].y(),
+				m_SelectedDefineSave.ImgObject[indexselectlabel].width(),
+				m_SelectedDefineSave.ImgObject[indexselectlabel].height());
+			m_OriRect = QRect(m_RectOpencv.x, m_RectOpencv.y, m_RectOpencv.width, m_RectOpencv.height);
+			cv::rectangle(img2show, m_RectOpencv, cv::Scalar(255, 0, 0), 5, 8, 0);
+			cv::resize(img2show, img2show, Size(m_LabelShow->width(), m_LabelShow->height()));
+			QImage disImage = QImage((const unsigned char*)(img2show.data), img2show.cols, img2show.rows, img2show.step, QImage::Format_RGB888);
+			m_LabelShow->setPixmap(QPixmap::fromImage(disImage));
+		}
 	}
 }
 void QtModelCreate::closeEvent(QCloseEvent * event)
 {
-	if (QMessageBox::Save==QMessageBox::warning(nullptr,QString::fromLocal8Bit("保存数据"),QString::fromLocal8Bit("是否保存"), QMessageBox::Save,QMessageBox::Cancel))
+	if (QMessageBox::Save == QMessageBox::warning(nullptr, QString::fromLocal8Bit("保存数据"), QString::fromLocal8Bit("是否保存"), QMessageBox::Save, QMessageBox::Cancel))
 	{
 		SaveCheckList();
 	}
@@ -269,6 +299,14 @@ void QtModelCreate::onClose()
 }
 void QtModelCreate::virtualPress(QKeyEvent * event)
 {
+	if (event->key() == m_iRepeatKey && (m_iRepeatKey == Qt::Key_Delete || m_iRepeatKey == Qt::Key_D || m_iRepeatKey == Qt::Key_S))
+	{
+		return;
+	}
+	else
+	{
+		m_iRepeatKey = event->key();
+	}
 	switch (event->key())
 	{
 	case Qt::Key_Space:
@@ -280,12 +318,12 @@ void QtModelCreate::virtualPress(QKeyEvent * event)
 	}
 	case Qt::Key_Z:
 	{
-		ui.imagelist->setCurrentRow(ui.imagelist->currentRow() - 1<0?0: ui.imagelist->currentRow() - 1);
+		ui.imagelist->setCurrentRow(ui.imagelist->currentRow() - 1 < 0 ? 0 : ui.imagelist->currentRow() - 1);
 		break;
 	}
 	case Qt::Key_C:
 	{
-		ui.imagelist->setCurrentRow(ui.imagelist->currentRow() + 1>=ui.imagelist->count() ? ui.imagelist->count()-1 : ui.imagelist->currentRow() + 1);
+		ui.imagelist->setCurrentRow(ui.imagelist->currentRow() + 1 >= ui.imagelist->count() ? ui.imagelist->count() - 1 : ui.imagelist->currentRow() + 1);
 		break;
 	}
 	case Qt::Key_S:
@@ -293,6 +331,22 @@ void QtModelCreate::virtualPress(QKeyEvent * event)
 		if (QMessageBox::Save == QMessageBox::warning(nullptr, QString::fromLocal8Bit("保存数据"), QString::fromLocal8Bit("是否保存"), QMessageBox::Save, QMessageBox::Cancel))
 		{
 			SaveCheckList();
+		}
+		break;
+	}
+	case Qt::Key_Delete:
+	case Qt::Key_D:
+	{
+		QString texx = ((QCheckBox*)ui.labellist->itemWidget(ui.labellist->currentItem()))->text();
+		int selectindex = ui.labellist->currentRow();
+		if (m_SelectedDefineSave.ImgObjectSample[selectindex] == texx)
+		{
+			if (QMessageBox::Ok==QMessageBox::warning(nullptr,QString::fromLocal8Bit("删除label"),QString::fromLocal8Bit("删除标签:")+texx,QMessageBox::Ok,QMessageBox::No))
+			{
+				SaveModel[m_iSelectedDefineSave].ImgObject.removeAt(selectindex);
+				SaveModel[m_iSelectedDefineSave].ImgObjectSample.removeAt(selectindex);
+				UpdateLabelList(SaveModel[m_iSelectedDefineSave].name);
+			}
 		}
 		break;
 	}
@@ -316,7 +370,7 @@ void QtModelCreate::IntiCheckList()
 		int startindex = str.lastIndexOf("/") + 1;
 		int endindex = str.lastIndexOf(".jpg") + 4;
 		QString name = str.mid(startindex, endindex + 1 - startindex);
-		QString strrect = str.right(str.length()-endindex - 1);
+		QString strrect = str.right(str.length() - endindex - 1);
 		strrect = strrect.trimmed();
 		strrect.replace(" ", ",");
 		QStringList listRect = strrect.split(QRegExp("[,*/^]"), QString::SkipEmptyParts);
@@ -344,9 +398,9 @@ void QtModelCreate::IntiCheckList()
 		SaveModel.append(rectandsimple);
 	}
 
-	if (m_iIsWhat==1)
-		m_SvideoPath = AppPath +"/"+ str.left(str.lastIndexOf("/") );
-	if (m_iIsWhat==0)
+	if (m_iIsWhat == 1)
+		m_SvideoPath = AppPath + "/" + str.left(str.lastIndexOf("/"));
+	if (m_iIsWhat == 0)
 	{
 		//保存图像序号
 		QString dir_str = AppPath + "/JPEGImages/";
@@ -373,11 +427,11 @@ void QtModelCreate::SaveCheckList()
 
 	QTextStream in(&file);
 	QList<DefineSave>::iterator it_end = SaveModel.end();
-	for (QList<DefineSave>::iterator it = SaveModel.begin();it!= it_end;it++)
+	for (QList<DefineSave>::iterator it = SaveModel.begin();it != it_end;it++)
 	{
-		if ((*it).ImgObject.size()!= (*it).ImgObject.size())
+		if ((*it).ImgObject.size() != (*it).ImgObject.size())
 		{
-			QMessageBox::warning(nullptr, QString::fromLocal8Bit("模板创建错误"), QString::fromLocal8Bit("模板框与模板类数据不符")+(*it).name);
+			QMessageBox::warning(nullptr, QString::fromLocal8Bit("模板创建错误"), QString::fromLocal8Bit("模板框与模板类数据不符") + (*it).name);
 			continue;
 		}
 		QString str_sample = " ";
@@ -387,7 +441,7 @@ void QtModelCreate::SaveCheckList()
 				QString::number((*it).ImgObject[i].x()) + "," +
 				QString::number((*it).ImgObject[i].y()) + "," +
 				QString::number((*it).ImgObject[i].width()) + "," +
-				QString::number((*it).ImgObject[i].height()) + "," + 
+				QString::number((*it).ImgObject[i].height()) + "," +
 				QString::number((*it).ImgObjectSample[i].toInt()) + " ";
 		}
 
@@ -404,7 +458,7 @@ void QtModelCreate::GetImageList()
 		filter << "*.jpg";
 		prober.setNameFilters(filter);
 		m_qslImageList = prober.entryList(filter);
-		if (m_qslImageList.size()<=0)
+		if (m_qslImageList.size() <= 0)
 		{
 			QMessageBox::warning(nullptr, QString::fromLocal8Bit("读取目录存在异常"), QString::fromLocal8Bit("目录中未找到JPG图片"));
 			m_iIsWhat = -1;
@@ -441,11 +495,12 @@ void QtModelCreate::UpdateLabelList(QString str)
 		if (str == SaveModel[i].name)
 		{
 			m_SelectedDefineSave = SaveModel[i];
+			m_iSelectedDefineSave = i;
 			break;
 		}
 	}
 
-	for (int i=0;i<m_SelectedDefineSave.ImgObjectSample.size();i++)
+	for (int i = 0;i < m_SelectedDefineSave.ImgObjectSample.size();i++)
 	{
 		QListWidgetItem * item = new QListWidgetItem(ui.labellist);
 		QCheckBox * box = new QCheckBox(ui.labellist);
@@ -457,6 +512,8 @@ void QtModelCreate::UpdateLabelList(QString str)
 		ui.labellist->addItem(item);
 		ui.labellist->setItemWidget(item, box);
 		box->setText(m_SelectedDefineSave.ImgObjectSample[i]);
+
+		//ui.labellist->addItem(item);
 	}
 }
 void QtModelCreate::onConvertPlay()
@@ -482,10 +539,10 @@ void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 	}
 
 	QString str;
-	if (0==m_iIsWhat)
+	if (0 == m_iIsWhat)
 	{
 		QString dir_str = AppPath + "/JPEGImages/";
-		str.sprintf("%05d", m_isaveImageindex)+".jpg";
+		str.sprintf("%05d", m_isaveImageindex) + ".jpg";
 		QString path = dir_str + str + ".jpg";
 		imwrite(path.toStdString(), m_MatLiveImg);
 	}
@@ -509,12 +566,12 @@ void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 	if (!b_repeat)
 	{
 		DefineSave rectandsimple;
-		if (0==m_iIsWhat)
+		if (0 == m_iIsWhat)
 		{
 			rectandsimple.path = "JPEGImages/" + str + ".jpg";
 			rectandsimple.name = str + ".jpg";
 		}
-		if (1==m_iIsWhat)
+		if (1 == m_iIsWhat)
 		{
 			str = ui.imagelist->currentItem()->text();
 			rectandsimple.path = "JPEGImages/" + str;
@@ -525,11 +582,14 @@ void QtModelCreate::onCreateModel(QString modelname, int sampleindex)
 		SaveModel.append(rectandsimple);
 	}
 	UpdateLabelList(str);
+	if (ui.labellist->count() > 0)
+	{
+		ui.labellist->setCurrentRow(ui.labellist->count() - 1);
+	}
 }
 void QtModelCreate::onSelectLabel(QModelIndex modelindex)
 {
 	QString strTemp = modelindex.data().toString();
-	//QMessageBox::about(nullptr, QString::fromLocal8Bit("LabelList"), strTemp);
 }
 void QtModelCreate::onOpen()
 {
@@ -538,7 +598,7 @@ void QtModelCreate::onOpen()
 	if ("OpenVideo" == pAvt->text())
 	{
 		m_SvideoPath = QFileDialog::getOpenFileName(this, tr("Find Files"), QDir::currentPath(), QString::fromLocal8Bit("视频文件(*.mp4;*.avi);;所有文件(*.*)"));
-		if (m_SvideoPath!="")
+		if (m_SvideoPath != "")
 		{
 			m_iIsWhat = 0;
 		}

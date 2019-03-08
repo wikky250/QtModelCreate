@@ -24,4 +24,5 @@ private:
 	void reject();
 
 	bool eventFilter(QObject *watched, QEvent *event);
+	void onListDoubleClick();
 };

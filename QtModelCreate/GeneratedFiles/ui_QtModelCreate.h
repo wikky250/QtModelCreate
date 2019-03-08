@@ -19,7 +19,7 @@
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
-#include <AllRelay.h>
+#include "AllRelay.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -31,7 +31,7 @@ public:
     QLabel *label;
     QLabel *label_show;
     QLabel *label_2;
-	QMyListWidget *labellist;
+    QMyListWidget *labellist;
 	QMyListWidget *imagelist;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
@@ -84,7 +84,7 @@ public:
         imagelist = new QMyListWidget(centralWidget);
         imagelist->setObjectName(QStringLiteral("imagelist"));
         imagelist->setMaximumSize(QSize(200, 16777215));
-        imagelist->setMouseTracking(true);
+        imagelist->setMouseTracking(false);
 
         gridLayout->addWidget(imagelist, 3, 1, 1, 1);
 

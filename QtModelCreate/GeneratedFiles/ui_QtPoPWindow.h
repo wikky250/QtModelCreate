@@ -57,6 +57,7 @@ public:
         retranslateUi(QtPoPWindow);
         QObject::connect(buttonBox, SIGNAL(accepted()), QtPoPWindow, SLOT(onOK()));
         QObject::connect(buttonBox, SIGNAL(rejected()), QtPoPWindow, SLOT(reject()));
+        QObject::connect(ClassList, SIGNAL(doubleClicked(QModelIndex)), QtPoPWindow, SLOT(onListDoubleClick()));
 
         QMetaObject::connectSlotsByName(QtPoPWindow);
     } // setupUi

@@ -22,10 +22,17 @@
 #include "cv.hpp"
 #include "highgui.h"
 using namespace cv;
+#ifdef DEBUG
 #pragma comment(lib,"opencv_highgui2413d.lib")
 #pragma comment(lib,"opencv_imgproc2413d.lib")
 #pragma comment(lib,"opencv_core2413d.lib")
 #pragma comment(lib,"opencv_video2413d.lib")
+#else
+#pragma comment(lib,"opencv_highgui2413.lib")
+#pragma comment(lib,"opencv_imgproc2413.lib")
+#pragma comment(lib,"opencv_core2413.lib")
+#pragma comment(lib,"opencv_video2413.lib")
+#endif
 #pragma endregion OpenCV
 
 //自定义结构体
