@@ -23,15 +23,19 @@
 #include "highgui.h"
 using namespace cv;
 #ifdef DEBUG
-#pragma comment(lib,"opencv_highgui2413d.lib")
-#pragma comment(lib,"opencv_imgproc2413d.lib")
-#pragma comment(lib,"opencv_core2413d.lib")
-#pragma comment(lib,"opencv_video2413d.lib")
+#pragma comment(lib,"opencv_highgui3414d.lib")
+#pragma comment(lib,"opencv_imgproc3414d.lib")
+#pragma comment(lib,"opencv_imgcodecs3414d.lib")
+#pragma comment(lib,"opencv_core3414d.lib")
+#pragma comment(lib,"opencv_video3414d.lib")
+#pragma comment(lib,"opencv_videoio3414d.lib")
 #else
-#pragma comment(lib,"opencv_highgui2413.lib")
-#pragma comment(lib,"opencv_imgproc2413.lib")
-#pragma comment(lib,"opencv_core2413.lib")
-#pragma comment(lib,"opencv_video2413.lib")
+#pragma comment(lib,"opencv_highgui3414.lib")
+#pragma comment(lib,"opencv_imgproc3414.lib")
+#pragma comment(lib,"opencv_imgcodecs3414.lib")
+#pragma comment(lib,"opencv_core3414.lib")
+#pragma comment(lib,"opencv_video3414.lib")
+#pragma comment(lib,"opencv_videoio3414.lib")
 #endif
 #pragma endregion OpenCV
 

@@ -121,7 +121,7 @@ void QtModelCreate::InitWindow()
 
 	bool flag = QObject::connect(ui.imagelist, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *, QListWidgetItem *)));
 	flag = QObject::connect(ui.labellist, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onChangeListItem(QListWidgetItem *, QListWidgetItem *)));
-	//flag = QObject::connect(ui.labellist, SIGNAL(clicked(QModelIndex)), this, SLOT(onSelectLabel(QModelIndex)));
+	flag = QObject::connect(ui.labellist, SIGNAL(clicked(QModelIndex)), this, SLOT(onSelectLabel(QModelIndex)));
 	flag = QObject::connect(ui.imagelist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
 	flag = QObject::connect(ui.labellist, SIGNAL(DefineMouseMove(QMouseEvent*)), this, SLOT(mouseMoveEvent(QMouseEvent*)));
 
@@ -235,7 +235,7 @@ void QtModelCreate::mouseReleaseEvent(QMouseEvent * event)
 void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem *previous)
 {
 
-	QMyListWidget *listwidget = qobject_cast<QMyListWidget *>(sender());
+	QListWidget *listwidget = qobject_cast<QListWidget *>(sender());
 	if (listwidget == NULL)
 	{
 		return;
@@ -243,8 +243,8 @@ void QtModelCreate::onChangeListItem(QListWidgetItem * current, QListWidgetItem 
 	if (listwidget->objectName() == "imagelist")
 	{
 		QString path = m_SvideoPath + current->text();
-		Mat img = imread(path.toStdString().c_str());
-		onShowImage(img);
+		m_MatLiveImg = imread(path.toStdString().c_str());
+		onShowImage(m_MatLiveImg);
 		UpdateLabelList(current->text());
 	}
 	if (listwidget->objectName() == "labellist")
@@ -512,8 +512,6 @@ void QtModelCreate::UpdateLabelList(QString str)
 		ui.labellist->addItem(item);
 		ui.labellist->setItemWidget(item, box);
 		box->setText(m_SelectedDefineSave.ImgObjectSample[i]);
-
-		//ui.labellist->addItem(item);
 	}
 }
 void QtModelCreate::onConvertPlay()
@@ -524,7 +522,7 @@ void QtModelCreate::onConvertPlay()
 }
 void QtModelCreate::onShowImage(Mat image)
 {
-	image.copyTo(m_MatLiveImg);
+	image.copyTo(image);
 	cv::resize(image, image, Size(m_LabelShow->width(), m_LabelShow->height()));
 	cvtColor(image, image, CV_BGR2RGB);
 	QImage disImage = QImage((const unsigned char*)(image.data), image.cols, image.rows, image.step, QImage::Format_RGB888);

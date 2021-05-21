@@ -15,14 +15,18 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="0">
-    <widget class="QListWidget" name="ClassList"/>
+    <widget class="QListWidget" name="ClassList">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item row="0" column="0">
     <widget class="QTextEdit" name="ClassName">
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>30</height>
+       <height>50</height>
       </size>
      </property>
     </widget>

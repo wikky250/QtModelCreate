@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'QtPoPWindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.11.2
+** Created by: Qt User Interface Compiler version 5.12.10
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -30,25 +30,26 @@ public:
     void setupUi(QWidget *QtPoPWindow)
     {
         if (QtPoPWindow->objectName().isEmpty())
-            QtPoPWindow->setObjectName(QStringLiteral("QtPoPWindow"));
+            QtPoPWindow->setObjectName(QString::fromUtf8("QtPoPWindow"));
         QtPoPWindow->resize(325, 391);
         gridLayout = new QGridLayout(QtPoPWindow);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
-        gridLayout->setObjectName(QStringLiteral("gridLayout"));
+        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         ClassList = new QListWidget(QtPoPWindow);
-        ClassList->setObjectName(QStringLiteral("ClassList"));
+        ClassList->setObjectName(QString::fromUtf8("ClassList"));
+        ClassList->setEnabled(true);
 
         gridLayout->addWidget(ClassList, 2, 0, 1, 1);
 
         ClassName = new QTextEdit(QtPoPWindow);
-        ClassName->setObjectName(QStringLiteral("ClassName"));
-        ClassName->setMaximumSize(QSize(16777215, 30));
+        ClassName->setObjectName(QString::fromUtf8("ClassName"));
+        ClassName->setMaximumSize(QSize(16777215, 50));
 
         gridLayout->addWidget(ClassName, 0, 0, 1, 1);
 
         buttonBox = new QDialogButtonBox(QtPoPWindow);
-        buttonBox->setObjectName(QStringLiteral("buttonBox"));
+        buttonBox->setObjectName(QString::fromUtf8("buttonBox"));
         buttonBox->setStandardButtons(QDialogButtonBox::Cancel|QDialogButtonBox::Ok);
 
         gridLayout->addWidget(buttonBox, 1, 0, 1, 1);
